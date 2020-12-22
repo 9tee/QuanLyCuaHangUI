@@ -1,10 +1,8 @@
 import './App.css';
 import React from 'react';
 import { connect } from 'react-redux';
-import Header from './components/header';
+import Body from './components/body';
 import { Layout } from 'antd';
-
-
 
 const { Content } = Layout;
 
@@ -14,9 +12,9 @@ class App extends React.Component {
       <>
         <Layout style={{margin:'0px auto', width:'80%' , maxWidth:'1140px'}}>
           <Content style={{ background: "white" }}>
-            <Header role={this.props.role}>
+            <Body role={this.props.role}>
 
-            </Header>
+            </Body>
           </Content>
         </Layout>
       </>

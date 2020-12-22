@@ -18,7 +18,6 @@ const composeEnhancers = typeof window === 'object' && window.__REDUX_DEVTOOLS_E
 
 const store = createStore(allReducers, composeEnhancers());
 
-window.dispatch = store.dispatch;
 
 ReactDOM.render(
   <Provider store={store}>
