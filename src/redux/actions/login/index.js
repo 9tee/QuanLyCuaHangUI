@@ -1,4 +1,4 @@
-import {LOGIN, SET_ROLE, LOGOUT} from './action_types';
+import {LOGIN, LOGOUT, SET_TOKEN} from './action_types';
 
 export default {
     login: (data) => ({
@@ -13,8 +13,8 @@ export default {
             data,
         }
     }),
-    setRole: (data) => ({
-        type: SET_ROLE,
+    setToken: (data) => ({
+        type: SET_TOKEN,
         data,
     })
 };

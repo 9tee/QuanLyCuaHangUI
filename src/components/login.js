@@ -1,8 +1,8 @@
 import React from 'react';
 import axios from 'axios';
-import 'antd/dist/antd.css';
+
 import { Form, Input, Button } from 'antd';
-import { BASE_URL } from '../consts';
+import { STAT_URL } from '../consts';
 
 import qs from 'qs';
 
@@ -25,20 +25,19 @@ class Login extends React.Component {
   }
 
   login(values){
-    axios.post(`${BASE_URL}/api/auth/signin`, values)
+    axios.post(`${STAT_URL}/v1/user/login`, values)
       .then(
         (respone) => {
-          window.axios = axios.create({
-            headers: {
-              Authorization: `${respone.data.tokenType} ${respone.data.accessToken}`,
-            },
-            paramsSerializer: function (params) {
-              return qs.stringify(params)
-            },
-          });
-          window.dispatch({ type: 'LOGIN', data: true });
-          window.dispatch({type:'SET_ROLE', data: respone.data.roles})
-          this.props.history.push("/");
+          console.log(respone)
+          if (respone.data.code === 200){
+            window.dispatch({type:'SET_TOKEN', data: respone.data.data})
+            window.dispatch({ type: 'LOGIN', data: true });
+            this.props.history.push("/app");
+          }
+          else{
+            alert('Đăng nhập không thành công');
+          }
+        
         }
       )
       .catch(console.log)

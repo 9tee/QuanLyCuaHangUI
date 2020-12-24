@@ -3,7 +3,10 @@ import { Table, Space, Image, Modal, Form, Input, Button, Select, Upload, messag
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
-import { BASE_URL, IMAGE_URL } from '../consts';
+import {withRouter} from 'react-router-dom';
+import { connect } from 'react-redux';
+ 
+import { STORE_URL, STAT_URL ,IMAGE_URL } from '../consts';
 import { List, Avatar } from 'antd';
 
 const { Column } = Table;
@@ -31,7 +34,9 @@ const data = [
 class Shop extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { data: [], visible: false };
+        this.state = { 
+            data: {}
+        };
         this.formRef = React.createRef();
 
     }
@@ -39,7 +44,31 @@ class Shop extends React.Component {
 
 
     componentDidMount() {
+        let config = {headers:{Auth: this.props.token}}
+        axios.get(`${STORE_URL}/v1/store/comment`,config)
+        .then((response) => {
+            if (response.data.code === 200){
+                this.setState({ comment: response.data.data })
+            }
+            else{
 
+                this.props.history.push("/")
+            } 
+        })
+        .catch(console.log)
+
+        axios.get(`${STAT_URL}/v1/statisticstore/`,config)
+        .then((response) => {
+            if (response.data.error.code === 200){
+                this.setState({best_food:response.data.data.best_selling_foods});
+                this.setState({loyal_customer:response.data.data.loyal_customers_name});
+                this.setState({info:{name:response.data.data.name, rate_avg:response.data.data.rate_avg}},() => console.log(this.state.info))
+            }
+            else{
+                this.props.history.push("/")
+            } 
+        })
+        .catch(console.log)
     }
 
     showModal(record) {
@@ -65,10 +94,10 @@ class Shop extends React.Component {
             <>
                 <h1>Thông tin cửa hàng</h1>
                 <h3>
-                    Tên cửa hàng:
+                    Tên cửa hàng:{this.state.info.name}
                 </h3>
                 <h3>
-                    Đánh giá:
+                    Đánh giá: {this.state.info.rate_avg}/5
                 </h3>
                 <h3>
                     Khách hàng thân thiết:
@@ -77,13 +106,12 @@ class Shop extends React.Component {
                 <div className="kh" style={{ marginTop: 10 }}>
                     <List
                         itemLayout="horizontal"
-                        dataSource={data}
+                        dataSource={this.state.loyal_customer}
                         renderItem={item => (
                             <List.Item>
                                 <List.Item.Meta
                                     avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
-                                    title={<a href="https://ant.design">{item.title}</a>}
-                                    description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+                                    title={<a href="https://ant.design">{item.customers_name}</a>}
                                 />
                             </List.Item>
                         )}
@@ -96,13 +124,12 @@ class Shop extends React.Component {
                 <div className="ma" style={{ marginTop: 10 }}>
                     <List
                         itemLayout="horizontal"
-                        dataSource={data}
+                        dataSource={this.state.best_food}
                         renderItem={item => (
                             <List.Item>
                                 <List.Item.Meta
-                                    avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
-                                    title={<a href="https://ant.design">{item.title}</a>}
-                                    description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+                                    title={<a href="https://ant.design">{item.food_name}</a>}
+                                    description={item.total_count}
                                 />
                             </List.Item>
                         )}
@@ -115,13 +142,13 @@ class Shop extends React.Component {
                 <div className="nhanxet" style={{ marginTop: 10 }}>
                     <List
                         itemLayout="horizontal"
-                        dataSource={data}
+                        dataSource={this.state.comment}
                         renderItem={item => (
                             <List.Item>
                                 <List.Item.Meta
                                     avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
-                                    title={<a href="https://ant.design">{item.title}</a>}
-                                    description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+                                    title={<a href="https://ant.design">{item.user_id}</a>}
+                                    description={item.comment}
                                 />
                             </List.Item>
                         )}
@@ -158,4 +185,10 @@ class Shop extends React.Component {
     }
 }
 
-export default Shop;
+const mapStateToProps = (state) => {
+    return{
+        token: state.login.token,
+    }
+}
+
+export default connect(mapStateToProps)(withRouter(Shop));

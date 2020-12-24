@@ -3,7 +3,9 @@ import { Table, Space, Image, Modal, Form, Input, Button, Select, Upload, messag
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
-import { BASE_URL, IMAGE_URL } from '../consts';
+import {withRouter} from 'react-router-dom';
+import { connect } from 'react-redux';
+import { IMAGE_URL, STORE_URL } from '../consts';
 
 const { Column } = Table;
 const { Option } = Select;
@@ -43,28 +45,40 @@ class Foods extends React.Component {
 
 
     componentDidMount() {
-        axios.get(`http://localhost:8080/v1/menu/detail`)
+        let config = {headers:{Auth: this.props.token}}
+        axios.get(`${STORE_URL}/v1/menu/detail`,config)
             .then(
                 (respone) => {
-                    console.log(respone)
-                    if (respone.data.code === 200)
+                    if (respone.data.code === 200){
                         this.setState({ data: respone.data.data })
+                    }
+                    else{
+                        this.props.history.push("/")
+                    } 
                 }
             )
             .catch(console.log)
-        axios.get(`http://localhost:8080/v1/menu`)
+        axios.get(`${STORE_URL}/v1/menu`,config)
             .then(
                 (respone) => {
-                    if (respone.data.code === 200)
+                    if (respone.data.code === 200){
                         this.setState({ menu: respone.data.data })
+                    }
+                    else{
+                        this.props.history.push("/")
+                    } 
                 }
             )
             .catch(console.log)
-        axios.get(`http://localhost:8080/v1/category`)
+        axios.get(`${STORE_URL}/v1/category`,config)
             .then(
                 (respone) => {
-                    if (respone.data.code === 200)
+                    if (respone.data.code === 200){
                         this.setState({ type: respone.data.data })
+                    }
+                    else{
+                        this.props.history.push("/")
+                    } 
                 }
             )
             .catch(console.log)
@@ -82,10 +96,11 @@ class Foods extends React.Component {
     }
 
     onFinishFood = (values) => {
-        axios.post(`http://localhost:8080/v1/food`, values)
+        let config = {headers:{Auth: this.props.token}}
+        axios.post(`${STORE_URL}/v1/food`, values, config)
             .then(() => {
                 this.setState({ visible: false }, () => {
-                    axios.get(`${BASE_URL}/foods`)
+                    axios.get(`${STORE_URL}/foods`)
                         .then(
                             (respone) => { this.setState({ data: respone.data }) }
                         )
@@ -104,22 +119,32 @@ class Foods extends React.Component {
             store_id: 0,
             update_date: 0
         }
-        axios.post(`http://localhost:8080/v1/menu`, data)
+        let config = {headers:{Auth: this.props.token}}
+        axios.post(`${STORE_URL}/v1/menu`, data,config)
             .then(() => {
-                axios.get(`http://localhost:8080/v1/menu/detail`)
+                axios.get(`${STORE_URL}/v1/menu/detail`, config)
                     .then(
                         (respone) => {
-                            console.log(respone)
-                            if (respone.data.code === 200)
+                            if (respone.data.code === 200){
                                 this.setState({ data: respone.data.data })
+                            }
+                            else{
+                                window.localStorage.removeItem('token')
+                                this.props.history.push("/")
+                            } 
                         }
                     )
                     .catch(console.log)
-                axios.get(`http://localhost:8080/v1/menu`)
+                axios.get(`${STORE_URL}/v1/menu`,config)
                     .then(
                         (respone) => {
-                            if (respone.data.code === 200)
+                            if (respone.data.code === 200){
                                 this.setState({ menu: respone.data.data })
+                            }
+                            else{
+                                window.localStorage.removeItem('token')
+                                this.props.history.push("/")
+                            } 
                         }
                     )
                     .catch(console.log)
@@ -296,4 +321,10 @@ class Foods extends React.Component {
     }
 }
 
-export default Foods;
+const mapStateToProps = (state) => {
+    return{
+        token: state.login.token,
+    }
+}
+
+export default connect(mapStateToProps)(withRouter(Foods));
