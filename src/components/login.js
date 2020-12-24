@@ -25,11 +25,11 @@ class Login extends React.Component {
   }
 
   login(values){
-    axios.post(`${STAT_URL}/v1/user/login`, values)
+    axios.post(`${STAT_URL}/v1/login`, values)
       .then(
         (respone) => {
           console.log(respone)
-          if (respone.data.code === 200){
+          if (respone.data.error.code === 200){
             window.dispatch({type:'SET_TOKEN', data: respone.data.data})
             window.dispatch({ type: 'LOGIN', data: true });
             this.props.history.push("/app");

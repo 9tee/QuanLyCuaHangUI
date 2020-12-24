@@ -3,7 +3,7 @@ import { Table, Space, Image, Modal, Form, Input, Button, Select, Upload, messag
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
-import {withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { IMAGE_URL, STORE_URL } from '../consts';
 
@@ -22,63 +22,63 @@ class Foods extends React.Component {
     }
 
     uploadProps = {
-        // name: 'file',
-        // action: 'http://192.168.0.109:8081/uploadFile',
-        // onChange: (info) => {
-        //     if (info.file.status !== 'uploading') {
-        //     }
-        //     if (info.file.status === 'done') {
-        //         message.success(`${info.file.name} file uploaded successfully`);
-        //     } else if (info.file.status === 'error') {
-        //         message.error(`${info.file.name} file upload failed.`);
-        //     }
-        // },
-        // progress: {
-        //     strokeColor: {
-        //         '0%': '#108ee9',
-        //         '100%': '#87d068',
-        //     },
-        //     strokeWidth: 3,
-        //     format: percent => `${parseFloat(percent.toFixed(2))}%`,
-        // },
+        name: 'file',
+        action: `${IMAGE_URL}/upload`,
+        onChange: (info) => {
+            if (info.file.status !== 'uploading') {
+            }
+            if (info.file.status === 'done') {
+                message.success(`${info.file.name} file uploaded successfully`);
+            } else if (info.file.status === 'error') {
+                message.error(`${info.file.name} file upload failed.`);
+            }
+        },
+        progress: {
+            strokeColor: {
+                '0%': '#108ee9',
+                '100%': '#87d068',
+            },
+            strokeWidth: 3,
+            format: percent => `${parseFloat(percent.toFixed(2))}%`,
+        },
     };
 
 
     componentDidMount() {
-        let config = {headers:{Auth: this.props.token}}
-        axios.get(`${STORE_URL}/v1/menu/detail`,config)
+        let config = { headers: { Auth: this.props.token } }
+        axios.get(`${STORE_URL}/v1/menu/detail`, config)
             .then(
                 (respone) => {
-                    if (respone.data.code === 200){
+                    if (respone.data.code === 200) {
                         this.setState({ data: respone.data.data })
                     }
-                    else{
+                    else {
                         this.props.history.push("/")
-                    } 
+                    }
                 }
             )
             .catch(console.log)
-        axios.get(`${STORE_URL}/v1/menu`,config)
+        axios.get(`${STORE_URL}/v1/menu`, config)
             .then(
                 (respone) => {
-                    if (respone.data.code === 200){
+                    if (respone.data.code === 200) {
                         this.setState({ menu: respone.data.data })
                     }
-                    else{
+                    else {
                         this.props.history.push("/")
-                    } 
+                    }
                 }
             )
             .catch(console.log)
-        axios.get(`${STORE_URL}/v1/category`,config)
+        axios.get(`${STORE_URL}/v1/category`, config)
             .then(
                 (respone) => {
-                    if (respone.data.code === 200){
+                    if (respone.data.code === 200) {
                         this.setState({ type: respone.data.data })
                     }
-                    else{
+                    else {
                         this.props.history.push("/")
-                    } 
+                    }
                 }
             )
             .catch(console.log)
@@ -96,13 +96,17 @@ class Foods extends React.Component {
     }
 
     onFinishFood = (values) => {
-        let config = {headers:{Auth: this.props.token}}
-        axios.post(`${STORE_URL}/v1/food`, values, config)
+        if (!!values.picker){
+        values.image = values.picker.file.response;
+        }
+        delete values["picker"];
+        let config = { headers: { Auth: this.props.token } }
+        axios.put(`${STORE_URL}/v1/food`, values, config)
             .then(() => {
                 this.setState({ visible: false }, () => {
-                    axios.get(`${STORE_URL}/foods`)
+                    axios.get(`${STORE_URL}/v1/menu/detail`, config)
                         .then(
-                            (respone) => { this.setState({ data: respone.data }) }
+                            (respone) => { this.setState({ data: respone.data.data }, () => console.log(this.state.data))}
                         )
                         .catch(console.log)
                 })
@@ -119,36 +123,36 @@ class Foods extends React.Component {
             store_id: 0,
             update_date: 0
         }
-        let config = {headers:{Auth: this.props.token}}
-        axios.post(`${STORE_URL}/v1/menu`, data,config)
+        let config = { headers: { Auth: this.props.token } }
+        axios.post(`${STORE_URL}/v1/menu`, data, config)
             .then(() => {
                 axios.get(`${STORE_URL}/v1/menu/detail`, config)
                     .then(
                         (respone) => {
-                            if (respone.data.code === 200){
+                            if (respone.data.code === 200) {
                                 this.setState({ data: respone.data.data })
                             }
-                            else{
+                            else {
                                 window.localStorage.removeItem('token')
                                 this.props.history.push("/")
-                            } 
+                            }
                         }
                     )
                     .catch(console.log)
-                axios.get(`${STORE_URL}/v1/menu`,config)
+                axios.get(`${STORE_URL}/v1/menu`, config)
                     .then(
                         (respone) => {
-                            if (respone.data.code === 200){
+                            if (respone.data.code === 200) {
                                 this.setState({ menu: respone.data.data })
                             }
-                            else{
+                            else {
                                 window.localStorage.removeItem('token')
                                 this.props.history.push("/")
-                            } 
+                            }
                         }
                     )
                     .catch(console.log)
-                this.setState({visibleMenu:false});
+                this.setState({ visibleMenu: false });
             })
             .catch(console.log)
     }
@@ -167,7 +171,7 @@ class Foods extends React.Component {
                         float: 'right',
                         margin: '0px 20px 15px 0px'
                     }}
-                    onClick={() => { this.showModal({}); this.setState({buttonText:'Thêm'}); }}>
+                    onClick={() => { this.showModal({}); this.setState({ buttonText: 'Thêm' }); }}>
                     Thêm mới đồ ăn
                 </Button>
 
@@ -185,7 +189,7 @@ class Foods extends React.Component {
                         <h2>{item.menu.name}</h2>
                         <Table dataSource={item.foods} pagination={false}>
                             <Column title="Mã" dataIndex="id" key="id" />
-                            <Column title="Ảnh" dataIndex="image" key="anh" render={(anh) => (<Image width={150} height={150} src={anh} />)} />
+                            <Column title="Ảnh" dataIndex="image" key="anh" render={(anh) => (<Image width={150} height={150} src={IMAGE_URL + anh} />)} />
                             <Column title="Tên món ăn" dataIndex="name" key="tenmon" />
                             <Column title="Giá" dataIndex="sale_price" key="gia" />
                             <Column title="Trạng thái" dataIndex="status" key="trangthai" />
@@ -194,7 +198,7 @@ class Foods extends React.Component {
                                 key="action"
                                 render={(record) => (
                                     <Space size="middle">
-                                        <a onClick={() => { this.showModal(record); this.setState({buttonText:'Sửa'}); }}>Edit</a>
+                                        <a onClick={() => { this.showModal(record); this.setState({ buttonText: 'Sửa' }); }}>Edit</a>
                                     </Space>
                                 )}
                             />
@@ -212,7 +216,7 @@ class Foods extends React.Component {
                         labelCol={{ span: 4 }}
                         wrapperCol={{ span: 20 }}
                         ref={this.formRef}
-                        onFinish={this.onFinish}
+                        onFinish={this.onFinishFood}
                         initialValues={{}}
                     >
                         <Form.Item
@@ -322,7 +326,7 @@ class Foods extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-    return{
+    return {
         token: state.login.token,
     }
 }

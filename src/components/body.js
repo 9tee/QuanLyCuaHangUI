@@ -2,6 +2,7 @@ import React from 'react';
 import { Tabs, Button } from 'antd';
 import Foods from './foods';
 import Shop from './shop';
+import Order from  './order';
 import { withRouter } from "react-router-dom";
 
 const { TabPane } = Tabs;
@@ -25,6 +26,9 @@ class Body extends React.Component {
                         </TabPane>
                         <TabPane tab="Cửa hàng của bạn" key="2">
                             <Shop></Shop>
+                        </TabPane>
+                        <TabPane tab="Danh sách đơn hàng" key="3">
+                            <Order></Order>
                         </TabPane>
                     </Tabs>
                 </div>

@@ -9,33 +9,16 @@ import { connect } from 'react-redux';
 import { STORE_URL, STAT_URL ,IMAGE_URL } from '../consts';
 import { List, Avatar } from 'antd';
 
-const { Column } = Table;
-const { Option } = Select;
-
-
-const data = [
-    {
-        title: 'Ant Design Title 1',
-    },
-    {
-        title: 'Ant Design Title 2',
-    },
-    {
-        title: 'Ant Design Title 3',
-    },
-    {
-        title: 'Ant Design Title 4',
-    },
-];
-
-
-
 
 class Shop extends React.Component {
     constructor(props) {
         super(props);
         this.state = { 
-            data: {}
+            data: {},
+            comment: [],
+            best_food: [],
+            loyal_customer: [],
+            info:{name:'',rate_avg:0}
         };
         this.formRef = React.createRef();
 
@@ -51,7 +34,7 @@ class Shop extends React.Component {
                 this.setState({ comment: response.data.data })
             }
             else{
-
+                window.localStorage.removeItem('token')
                 this.props.history.push("/")
             } 
         })
@@ -65,7 +48,7 @@ class Shop extends React.Component {
                 this.setState({info:{name:response.data.data.name, rate_avg:response.data.data.rate_avg}},() => console.log(this.state.info))
             }
             else{
-                this.props.history.push("/")
+                window.localStorage.removeItem('token')
             } 
         })
         .catch(console.log)
