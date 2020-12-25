@@ -108,7 +108,7 @@ class Order extends React.Component {
                                 <span>Điểm đến: </span>
                                 <span>{item.address}</span>
                             </div>
-                            {item.order_status === 2 ?
+                            {item.order_status === "2" ?
                                 <div id="btn-nhan">
                                     <Button danger type="primary" onClick={() => this.receiveOrder(item.id)} style={{ border: 'none' }}>Nhận Đơn</Button>
                                 </div>

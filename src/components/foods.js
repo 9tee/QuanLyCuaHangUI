@@ -96,23 +96,37 @@ class Foods extends React.Component {
     }
 
     onFinishFood = (values) => {
-        if (!!values.picker){
-        values.image = values.picker.file.response;
+        if (!!values.picker) {
+            values.image = values.picker.file.response;
         }
         delete values["picker"];
         let config = { headers: { Auth: this.props.token } }
-        axios.put(`${STORE_URL}/v1/food`, values, config)
-            .then(() => {
-                this.setState({ visible: false }, () => {
-                    axios.get(`${STORE_URL}/v1/menu/detail`, config)
-                        .then(
-                            (respone) => { this.setState({ data: respone.data.data }, () => console.log(this.state.data))}
-                        )
-                        .catch(console.log)
+        if (!values.id) {
+            axios.put(`${STORE_URL}/v1/food`, values, config)
+                .then(() => {
+                    this.setState({ visible: false }, () => {
+                        axios.get(`${STORE_URL}/v1/menu/detail`, config)
+                            .then(
+                                (respone) => { this.setState({ data: respone.data.data }, () => console.log(this.state.data)) }
+                            )
+                            .catch(console.log)
+                    })
                 })
-            })
-            .catch(console.log)
-
+                .catch(console.log)
+        }
+        else {
+            axios.post(`${STORE_URL}/v1/food`, values, config)
+                .then(() => {
+                    this.setState({ visible: false }, () => {
+                        axios.get(`${STORE_URL}/v1/menu/detail`, config)
+                            .then(
+                                (respone) => { this.setState({ data: respone.data.data }, () => console.log(this.state.data)) }
+                            )
+                            .catch(console.log)
+                    })
+                })
+                .catch(console.log)
+        }
     }
 
     onFinishMenu = (values) => {

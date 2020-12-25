@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 
 import { Form, Input, Button } from 'antd';
-import { STAT_URL } from '../consts';
+import { STAT_URL, IMAGE_URL } from '../consts';
 
 import qs from 'qs';
 
