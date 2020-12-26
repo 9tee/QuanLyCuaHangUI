@@ -101,7 +101,7 @@ class Foods extends React.Component {
         }
         delete values["picker"];
         let config = { headers: { Auth: this.props.token } }
-        if (!values.id) {
+        if (!!values.id) {
             axios.put(`${STORE_URL}/v1/food`, values, config)
                 .then(() => {
                     this.setState({ visible: false }, () => {
